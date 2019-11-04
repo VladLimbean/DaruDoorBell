@@ -11,3 +11,8 @@ if __name__ == '__main__':
     test = 'assets/Darude-Sandstorm.mp3'
     test_player = AudioPlayer(test)
     test_player.start()
+
+#TODO: add flags for looping
+#TODO: add keyboard interrupt
+# code key logic
+# sample audio
