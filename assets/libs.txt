@@ -1,0 +1,7 @@
+x264
+libvpx-dev
+libmp3lame-dev
+libnuma-dev
+libx265-dev
+
+sudo ./configure --arch=armel --target-os=linux --enable-gpl --enable-libx264 --enable-libmp3lame --enable-libvpx --enable-libx265 --enable-nonfree && PATH="$HOME/bin:$PATH" && sudo make && sudo make install 
