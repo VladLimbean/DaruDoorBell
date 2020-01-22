@@ -19,7 +19,7 @@ NOSTATS   = '-nostats'
 HIDEBANNER = '-hide_banner'
 
 global options, arg_options
-options     = [FFMPEG, NODISPLAY, AUTOEXIT, EXIT_M, NOSTATS, HIDEBANNER]
+options     = [FFMPEG, NODISPLAY, AUTOEXIT, EXIT_M, NOSTATS, HIDEBANNER, LOOP]
 arg_options = [SEEK, DURATION, VOLUME, LOOP]
 
 class AudioManager(Thread):
@@ -44,7 +44,6 @@ class AudioManager(Thread):
     def init_audio_process(self, path, config=list):
         self.lock.acquire()
         
-        #print('config list >>> {}'.format(config))
         for itm in config:
             #allow strings
             if type(itm) == str:
@@ -56,10 +55,12 @@ class AudioManager(Thread):
                 print('Error: Option item is not a tuple')
                 return
         self.process_options.append(FFMPEG)
+
         for itm in config:
             self.__set_process_option(itm)
         
         _proc = AudioProcess(audio_path=path, options=self.process_options)
+        print('config list >>> {}'.format(self.process_options))
         print('Process initialized')
 
         self.audio_procs.append(_proc)
@@ -72,13 +73,16 @@ class AudioManager(Thread):
         
         # set options with args
         if len(option) == 2 and option[0] in arg_options:    
-            res_config = '{} {}'.format(option[0], option[1])
+            #res_config = '{} {}'.format(option[0], option[1])
+            self.process_options.append(option[0])
+            self.process_options.append(str(option[1]))
+            return
 
         # set options w/o args
         elif option in options:
             res_config = option 
-        
-        self.process_options.append(res_config)
+            self.process_options.append(res_config)
+            return
     
     #------------------------------------------------------------------------------------[UTIL]
 
@@ -132,3 +136,5 @@ class AudioManager(Thread):
             self.update()
             time.sleep(0.3)
             self.lock.release()
+
+manager = AudioManager()

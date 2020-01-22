@@ -8,9 +8,10 @@ class AudioProcess():
 
     def __init__(self, audio_path, options):
         self.file       = os.path.abspath(audio_path)
-        self.opt        = options
-        # MAKE THIS MORE ELEGANT
-        self.opt.append(self.file)
+        self.args        = options
+        
+        # add file to play
+        self.args.append(self.file)
 
         self.audio_proc = None
         self.playing    = False
@@ -20,10 +21,10 @@ class AudioProcess():
     #------------------------------------------------------------------------------------[AUDIO PROCESS INIT]
     def start(self):
         print('Starting: {}'.format(self.file))
-        print('Options: {}'.format(self.opt))
+        #print('Options: {}'.format(self.args))
         try:
             
-            self.audio_proc = Popen(self.opt, stdout=PIPE, stdin=PIPE, shell=False)
+            self.audio_proc = Popen(self.args, stdout=PIPE, stdin=PIPE, shell=False)
             self.playing    = True
         except:
             print('Cannot play file {}'.format(self.file))

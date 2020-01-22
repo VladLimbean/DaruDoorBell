@@ -1,10 +1,10 @@
 import os
 import keyboard
 
-from managers import AudioManager, NODISPLAY, AUTOEXIT, NOSTATS, HIDEBANNER
+from managers import NODISPLAY, AUTOEXIT, NOSTATS, HIDEBANNER
 from managers import EventManager
+from managers import manager, profile 
 
-manager  = AudioManager()
 event    = EventManager()
 
 def listen():
@@ -21,17 +21,6 @@ def exit():
     except:
         print('Could not terminate manager')
     
-
-def play_test():
-    test = 'assets/Darude-Sandstorm.mp3'
-    manager.init_audio_process(test, config=[NODISPLAY, AUTOEXIT, NOSTATS, HIDEBANNER])
-
-keyboard.add_hotkey('a', play_test)
+keyboard.add_hotkey('a', profile.click)
 keyboard.add_hotkey('q', exit)
 listen()
-
-
-    
-#TODO: add event system / or probably remove it entirely ...
-#TODO: add audio process type / event listener
-# sample audio
