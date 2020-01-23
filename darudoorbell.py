@@ -1,4 +1,5 @@
 import os
+import psutil
 import keyboard
 
 from managers import NODISPLAY, AUTOEXIT, NOSTATS, HIDEBANNER
@@ -20,6 +21,10 @@ def exit():
         
     except:
         print('Could not terminate manager')
+    # WORKAROUND FOR SUBPROCESSES NOT BEING POPULATED IN THE MANAGER LIST
+    for p in psutil.process_iter():
+        if p.name() == 'ffplay':
+            p.kill()
     
 keyboard.add_hotkey('a', profile.click)
 keyboard.add_hotkey('q', exit)

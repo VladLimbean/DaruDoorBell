@@ -58,18 +58,20 @@ class AudioManager(Thread):
 
         for itm in config:
             self.__set_process_option(itm)
-        
-        _proc = AudioProcess(audio_path=path, options=self.process_options)
-        print('config list >>> {}'.format(self.process_options))
-        print('Process initialized')
+        try:
+            _proc = AudioProcess(audio_path=path, options=self.process_options)
+            #print('config list >>> {}'.format(self.process_options))
+            #print('Process initialized')
 
-        self.audio_procs.append(_proc)
-        self.reset_process_options()
+            # TODO: figure out why the process never registers in the list
+            self.audio_procs.append(_proc)
+            self.reset_process_options()
+        except:
+            print('WTF?')
         self.lock.release()
         
     def __set_process_option(self, option=tuple):
         res_config = ''
-        #print(str(option[0] in options) + ' ' + option[0])
         
         # set options with args
         if len(option) == 2 and option[0] in arg_options:    
@@ -91,15 +93,19 @@ class AudioManager(Thread):
         self.process_options = []
 
     def terminate_all(self):
+        self.lock.acquire()
         for proc in self.audio_procs:
-            if proc:
-                proc.stop()
+            try:
+                if proc:
+                    proc.stop()
+            except:
+                raise ProcessLookupError('Somthing happened when trying to close the process')
+        self.lock.release()
         print('All processes terminated')
 
     def update(self):
         """Refreshes the audio process list removing idle processes"""
         kill = []
-
         for proc in self.audio_procs:
             if proc == None:
                 continue
@@ -112,29 +118,29 @@ class AudioManager(Thread):
         for i in kill:
             if i != None:
                 i.stop()
-            self.audio_procs.remove(i)
+                self.audio_procs.remove(i)
+
         self.state()
     #------------------------------------------------------------------------------------[STATE / EVENTS]
     def state(self):
+        """Describes number of processes running.
+        
+        THIS IS CURRENTLY BROKEN SINCE THE LIST MAGICALLY REFUSES TO REGUSTER ANY APPENDED PROCESSES
+        MIGHT BE MY MISTAKE, WILL FIX ASAP
+        """
         res = 'Processes playing: {}'.format(len(self.audio_procs))
         print(res, sep='', end='\r', flush=True)
 
     def is_stopped(self):
         return self.stop_event.is_set()
     
-    #TODO: non critical, but do figure out why the thread hangs
     def stop(self):
-        self.lock.acquire()
         self.terminate_all()
-
         self.stop_event.set()
-        self.lock.release()
 
     def run(self):
         while not self.is_stopped():
-            self.lock.acquire()
             self.update()
             time.sleep(0.3)
-            self.lock.release()
 
 manager = AudioManager()
